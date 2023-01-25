@@ -1,0 +1,14 @@
+Updated: 12/30/20
+
+[X] finish/clean up wfc
+
+------------------------------ Other ------------------------------
+
+Medium priority
+    [X] class for qedir (bundles classes and methods for reading qeinp, qeout, and qesave!)
+    [X] clean/finish examples
+
+Low priority
+    [X] generalized supercell implementation
+    [X] ibrav to/from 0 method in atomgeo
+    [X] convert to/from ase and pymatgen
