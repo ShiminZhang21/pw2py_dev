@@ -249,9 +249,7 @@ def calc_dR(self, geo, units='angstrom', suppress_warnings=False):
             warn('Cell parameters do not match!')
         if not np.array_equal(self.elements(), geo.elements()):
             warn('Elements of calculation do not match!')
-    # align the atoms in same edge:
-    print("atom will be align to same edge as referecen input")
-    Align_cell(self,geo)
+
     # if needed copy and convert to pos to supplied units
     if self.pos_units != units:
         self_c = deepcopy(self)
@@ -352,39 +350,3 @@ def composition(self) -> dict:
     Return the composition of ions
     '''
     return {k: v for k, v in zip(*np.unique(self.ion, return_counts=True))}
-
-def Align_cell(self,geo2):
-    """
-    align the geometry1 with geo2 as reference. 
-    Keep the corresponded atoms in geo1 and geo1 at same edge of the cell. 
-    Example: 
-        atom at z=1.001 slightly exceed the crystal boundary of z=1 will be round into z=0.001.
-        here suppose the atom in reference geometry(geo2) is z=0.9, 
-        the method will tune the geometry 1 back to 1.001 regardless of exceeding the boundary
-    The tunning will run when correponded atom have coordinate difference >0.8 in crystall coordinate.
-            
-    """
-    from copy import deepcopy
-    #verify geo1 and geo2 have same numbers of atoms:
-    if not len(self.pos)==len(geo2.pos):
-        raise ValueError("The two geometries don't have same number of atoms")
-    unit1 = self.pos_units
-    unit2 = geo2.pos_units
-    #first make unit crystal:
-    self.pos_units = 'crystal'
-    geo2.pos_units = 'crystal'
-    geo1_c = deepcopy(self)
-    
-    #Now we make the geo1's in same cell as geo2:
-    for i_atom in range(len(geo1_c.pos)):
-        #print(geo1_new.pos[i_atom])
-        self.pos[i_atom] = [y- ((y-x)>0.8).astype('int')+((y-x)<-0.8).astype('int') for x,y in zip(geo2.pos[i_atom],geo1_c.pos[i_atom])]
-    #change the unit back
-    self.pos_units = unit1
-    geo2.pos_units = unit2
-    geo1_c.pos_units = unit1
-    print("atom in geo1 has aligned with geo2")
-    print("{:40s}{:40s}{:40s}".format("reference geometry","before align","after align"))
-    for x,y,z in zip(geo2.pos,geo1_c.pos,self.pos):
-        if any(y!=z):
-            print("{:40s}{:40s}{:40s}".format(str(x),str(y),str(z)))    
